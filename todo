@@ -1,0 +1,66 @@
+### Backend (API con FastAPI y Python)
+
+**Configuración Base**
+
+* [ ] Configurar el entorno virtual (`.venv`) dentro de la carpeta `api/`.
+* [ ] Instalar las dependencias necesarias (ej. `fastapi`, `uvicorn`, `sympy`, `pydantic`).
+* [ ] Crear el archivo `main.py` y configurar los middlewares de CORS para permitir que el frontend se comunique sin bloqueos.
+
+**Modelos de Datos (Pydantic)**
+
+* [ ] Crear el esquema de entrada (`Request`): Debe recibir la función (texto), el punto inicial $x_0$ (número), la tolerancia (número) y opcionalmente el máximo de iteraciones.
+* [ ] Crear el esquema de salida (`Response`): Debe estructurar la respuesta como una lista de objetos (cada objeto representa una iteración con sus respectivos valores).
+
+**Motor Matemático (Servicios)**
+
+* [ ] Implementar la lectura de la función de texto usando una librería simbólica (`SymPy`) para que Python la entienda como una ecuación.
+* [ ] Generar el cálculo automático de la derivada simbólica a partir de la función ingresada.
+* [ ] Crear la función evaluadora que reciba un valor de $x$ y devuelva los resultados numéricos de $f(x)$ y $f'(x)$.
+
+**Lógica de Newton-Raphson**
+
+* [ ] Implementar el bucle `while` o `for` para las iteraciones, asegurando un límite máximo estricto (ej. 100 iteraciones) para evitar bucles infinitos.
+* [ ] Añadir la validación en cada paso: Si $f'(x_i)$ es igual a 0, detener el algoritmo y retornar un error ("Derivada cero, no se puede continuar").
+* [ ] Implementar el cálculo del error relativo $E_r = |(x_{i+1} - x_i) / x_{i+1}|$.
+* [ ] Añadir la validación del error relativo: Si $x_{i+1}$ es igual a 0, manejar la excepción para evitar división por cero.
+* [ ] Guardar en cada ciclo de iteración los valores actuales (Iteración, $x_i$, $f(x_i)$, $f'(x_i)$, Error) en una lista.
+* [ ] Definir el criterio de parada principal: Romper el bucle cuando el error relativo calculado sea menor o igual a la tolerancia solicitada.
+
+**Endpoints**
+
+* [ ] Crear la ruta POST (ej. `/api/calcular-raiz`) que reciba el JSON del frontend, ejecute el motor matemático y devuelva la lista completa de iteraciones o el mensaje de error correspondiente.
+
+---
+
+### Frontend (Svelte, Bun y Tailwind CSS)
+
+**Estructura y UI Base**
+
+* [ ] Limpiar el código base generado por Svelte en `App.svelte`.
+* [ ] Diseñar el layout principal usando las clases de Tailwind CSS (un contenedor centrado, títulos claros, diseño limpio).
+
+**Gestión de Estado (Reactividad)**
+
+* [ ] Declarar las variables reactivas para los *inputs* del usuario (función, $x_0$, tolerancia).
+* [ ] Declarar variables para almacenar el resultado devuelto por la API (un arreglo vacío por defecto).
+* [ ] Declarar variables para manejar el estado de la aplicación (ej. `cargando = false`, `mensajeError = ''`).
+
+**Formulario de Entrada**
+
+* [ ] Crear los campos de entrada (`<input>`) vinculados (con `bind:value`) a las variables reactivas de Svelte.
+* [ ] Añadir validaciones básicas en el frontend (ej. no permitir enviar el formulario si la función está vacía).
+* [ ] Crear el botón de "Calcular".
+
+**Conexión con la API**
+
+* [ ] Implementar una función asíncrona que se ejecute al enviar el formulario.
+* [ ] Usar `fetch()` nativo para hacer un POST a la ruta de tu API local (ej. `http://localhost:8000/api/calcular-raiz`), enviando los datos del formulario en formato JSON.
+* [ ] Manejar la respuesta: Actualizar la variable reactiva de resultados si es exitosa, o mostrar el `mensajeError` si la API devuelve un fallo (ej. la función no converge).
+* [ ] Cambiar el estado visual del botón a "Calculando..." mientras se espera la respuesta.
+
+**Renderizado de Resultados**
+
+* [ ] Crear una tabla estilizada con Tailwind CSS.
+* [ ] Usar el bloque `{#each resultados as fila}` de Svelte para iterar sobre el JSON recibido de la API e imprimir dinámicamente cada fila de la tabla.
+* [ ] Dar formato a los números en la tabla (ej. limitar los decimales a 6 u 8 posiciones para que la tabla no se deforme).
+* [ ] Mostrar un bloque de alerta estilizado si `mensajeError` contiene algún texto (para casos de división por cero o superación de iteraciones).
