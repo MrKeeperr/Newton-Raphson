@@ -266,35 +266,37 @@
     <div class="retro-panel mt-4">
         <form on:submit|preventDefault={calcularRaiz}>
             <table width="100%" cellpadding="5">
-                <tr>
-                    <td colspan="3">
-                        <label for="funcion"><b>Función f(x):</b></label><br>
-                        <input 
-                            bind:this={funcionInput}
-                            type="text" 
-                            id="funcion" 
-                            bind:value={funcion} 
-                            placeholder="Ej. x^2 - 4" 
-                            class="retro-input"
-                            style="width: 95%; font-size: 20px; padding: 10px; color: blue; font-weight: bold;"
-                            required
-                        >
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="x0"><b>Punto inicial (x₀):</b></label><br>
-                        <input type="number" step="any" id="x0" bind:value={x0} class="retro-input" required>
-                    </td>
-                    <td>
-                        <label for="tolerancia"><b>Tolerancia:</b></label><br>
-                        <input type="number" step="any" id="tolerancia" bind:value={tolerancia} class="retro-input" required>
-                    </td>
-                    <td>
-                        <label for="maxIteraciones"><b>Máx. Iteraciones:</b></label><br>
-                        <input type="number" id="maxIteraciones" bind:value={maxIteraciones} class="retro-input" required>
-                    </td>
-                </tr>
+                <tbody>
+                    <tr>
+                        <td colspan="3">
+                            <label for="funcion"><b>Función f(x):</b></label><br>
+                            <input 
+                                bind:this={funcionInput}
+                                type="text" 
+                                id="funcion" 
+                                bind:value={funcion} 
+                                placeholder="Ej. x^2 - 4" 
+                                class="retro-input"
+                                style="width: 95%; font-size: 20px; padding: 10px; color: blue; font-weight: bold;"
+                                required
+                            >
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="x0"><b>Punto inicial (x₀):</b></label><br>
+                            <input type="number" step="any" id="x0" bind:value={x0} class="retro-input" required>
+                        </td>
+                        <td>
+                            <label for="tolerancia"><b>Tolerancia:</b></label><br>
+                            <input type="number" step="any" id="tolerancia" bind:value={tolerancia} class="retro-input" required>
+                        </td>
+                        <td>
+                            <label for="maxIteraciones"><b>Máx. Iteraciones:</b></label><br>
+                            <input type="number" id="maxIteraciones" bind:value={maxIteraciones} class="retro-input" required>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
 
             <hr>
@@ -305,47 +307,49 @@
             </div>
             
             <table align="center" cellspacing="4" cellpadding="0" style="margin-top: 10px;">
-                <tr>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('sin(')}>sin</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('cos(')}>cos</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('tan(')}>tan</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('sqrt(')}>√</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('exp(')}>exp</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('log(')}>ln</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('pi')}>π</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('E')}>e</button></td>
-                </tr>
-                <tr>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('7')}>7</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('8')}>8</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('9')}>9</button></td>
-                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(' / ')}>÷</button></td>
-                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText('^')}>^</button></td>
-                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText('(')}>(</button></td>
-                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(')')}>)</button></td>
-                    <td><button type="button" class="retro-button retro-button-red" on:click={backspace}>⌫</button></td>
-                </tr>
-                <tr>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('4')}>4</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('5')}>5</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('6')}>6</button></td>
-                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(' * ')}>×</button></td>
-                    <td colspan="2" rowspan="2"><button type="button" class="retro-button" style="width: 100%; height: 100%; font-size: 24px; color: #800000;" on:click={() => insertText('x')}>x</button></td>
-                    <td colspan="2"><button type="button" class="retro-button retro-button-red" style="width: 100%;" on:click={clearFunction}>BORRAR TODO</button></td>
-                </tr>
-                <tr>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('1')}>1</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('2')}>2</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('3')}>3</button></td>
-                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(' - ')}>−</button></td>
-                    <td colspan="2">&nbsp;</td>
-                </tr>
-                <tr>
-                    <td colspan="2"><button type="button" class="retro-button" style="width: 100%;" on:click={() => insertText('0')}>0</button></td>
-                    <td><button type="button" class="retro-button" on:click={() => insertText('.')}>.</button></td>
-                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(' + ')}>+</button></td>
-                    <td colspan="4">&nbsp;</td>
-                </tr>
+                <tbody>
+                    <tr>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('sin(')}>sin</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('cos(')}>cos</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('tan(')}>tan</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('sqrt(')}>√</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('exp(')}>exp</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('log(')}>ln</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('pi')}>π</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('E')}>e</button></td>
+                    </tr>
+                    <tr>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('7')}>7</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('8')}>8</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('9')}>9</button></td>
+                        <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(' / ')}>÷</button></td>
+                        <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText('^')}>^</button></td>
+                        <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText('(')}>(</button></td>
+                        <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(')')}>)</button></td>
+                        <td><button type="button" class="retro-button retro-button-red" on:click={backspace}>⌫</button></td>
+                    </tr>
+                    <tr>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('4')}>4</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('5')}>5</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('6')}>6</button></td>
+                        <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(' * ')}>×</button></td>
+                        <td colspan="2" rowspan="2"><button type="button" class="retro-button" style="width: 100%; height: 100%; font-size: 24px; color: #800000;" on:click={() => insertText('x')}>x</button></td>
+                        <td colspan="2"><button type="button" class="retro-button retro-button-red" style="width: 100%;" on:click={clearFunction}>BORRAR TODO</button></td>
+                    </tr>
+                    <tr>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('1')}>1</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('2')}>2</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('3')}>3</button></td>
+                        <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(' - ')}>−</button></td>
+                        <td colspan="2">&nbsp;</td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"><button type="button" class="retro-button" style="width: 100%;" on:click={() => insertText('0')}>0</button></td>
+                        <td><button type="button" class="retro-button" on:click={() => insertText('.')}>.</button></td>
+                        <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(' + ')}>+</button></td>
+                        <td colspan="4">&nbsp;</td>
+                    </tr>
+                </tbody>
             </table>
 
             <hr>
