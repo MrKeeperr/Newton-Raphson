@@ -1,4 +1,6 @@
 <script>
+    import { onMount } from 'svelte';
+
     // Gestión de Estado (Reactividad)
     let funcion = '';
     let x0 = 0;
@@ -10,6 +12,55 @@
     let cargando = false;
     let mensajeError = '';
     let mensajeExito = '';
+
+    let funcionInput;
+
+    // Funciones del teclado virtual matemático
+    function insertText(text) {
+        if (funcionInput) {
+            const start = funcionInput.selectionStart;
+            const end = funcionInput.selectionEnd;
+            funcion = funcion.substring(0, start) + text + funcion.substring(end);
+            
+            // Re-enfocar y mover el cursor después del texto insertado
+            setTimeout(() => {
+                funcionInput.selectionStart = funcionInput.selectionEnd = start + text.length;
+                funcionInput.focus();
+            }, 0);
+        } else {
+            funcion += text;
+        }
+    }
+
+    function backspace() {
+        if (funcionInput && funcionInput.selectionStart > 0) {
+            const start = funcionInput.selectionStart;
+            const end = funcionInput.selectionEnd;
+            
+            if (start === end) {
+                // Borrar un caracter hacia atrás
+                funcion = funcion.substring(0, start - 1) + funcion.substring(end);
+                setTimeout(() => {
+                    funcionInput.selectionStart = funcionInput.selectionEnd = start - 1;
+                    funcionInput.focus();
+                }, 0);
+            } else {
+                // Borrar selección actual
+                funcion = funcion.substring(0, start) + funcion.substring(end);
+                setTimeout(() => {
+                    funcionInput.selectionStart = funcionInput.selectionEnd = start;
+                    funcionInput.focus();
+                }, 0);
+            }
+        } else if (!funcionInput) {
+            funcion = funcion.slice(0, -1);
+        }
+    }
+
+    function clearFunction() {
+        funcion = '';
+        if (funcionInput) funcionInput.focus();
+    }
 
     // Conexión con la API
     async function calcularRaiz() {
@@ -82,11 +133,12 @@
                             <label for="funcion" class="block text-sm font-semibold text-slate-700">Función f(x)</label>
                             <div class="mt-2">
                                 <input 
+                                    bind:this={funcionInput}
                                     type="text" 
                                     id="funcion" 
                                     bind:value={funcion} 
-                                    placeholder="ej. x**2 - 4 o sin(x) - x/2" 
-                                    class="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3" 
+                                    placeholder="ej. x^2 - 4 o sin(x) - x/2" 
+                                    class="block w-full rounded-md border-0 py-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-lg sm:text-2xl font-mono px-4" 
                                     required
                                 >
                             </div>
@@ -131,6 +183,55 @@
                                     required
                                 >
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Teclado Matemático Virtual -->
+                    <div class="sm:col-span-2 lg:col-span-3 mt-8 bg-slate-100 p-4 sm:p-6 rounded-xl shadow-inner border border-slate-200">
+                        <div class="text-xs font-semibold text-slate-500 mb-3 uppercase tracking-wider">Teclado Matemático</div>
+                        
+                        <div class="grid grid-cols-4 sm:grid-cols-8 gap-2 mb-2">
+                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('sin(')}>sin</button>
+                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('cos(')}>cos</button>
+                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('tan(')}>tan</button>
+                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('sqrt(')}>√</button>
+                            
+                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('exp(')}>exp</button>
+                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('log(')}>ln</button>
+                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('pi')}>π</button>
+                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('E')}>e</button>
+                        </div>
+
+                        <div class="grid grid-cols-4 sm:grid-cols-8 gap-2">
+                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('7')}>7</button>
+                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('8')}>8</button>
+                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('9')}>9</button>
+                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText(' / ')}>÷</button>
+                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('^')}>^</button>
+                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('(')}>(</button>
+                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText(')')}>)</button>
+                            <button type="button" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 px-3 border border-red-200 rounded shadow-sm transition-colors text-sm font-mono flex items-center justify-center" on:click={backspace}>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75L14.25 12m0 0l2.25 2.25M14.25 12l2.25-2.25M14.25 12L12 14.25m-2.58 4.92l-6.375-6.375a1.125 1.125 0 010-1.59L9.42 4.83c.211-.211.498-.33.796-.33H19.5a2.25 2.25 0 012.25 2.25v10.5a2.25 2.25 0 01-2.25 2.25h-9.284c-.298 0-.585-.119-.796-.33z" /></svg>
+                            </button>
+                            
+                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('4')}>4</button>
+                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('5')}>5</button>
+                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('6')}>6</button>
+                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText(' * ')}>×</button>
+                            <button type="button" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold py-2 px-3 border border-amber-300 rounded shadow-sm transition-colors text-xl font-mono col-span-2 row-span-2 flex items-center justify-center" on:click={() => insertText('x')}>x</button>
+                            <button type="button" class="bg-red-50 hover:bg-red-100 text-red-700 font-bold py-2 px-3 border border-red-200 rounded shadow-sm transition-colors text-sm font-mono col-span-2" on:click={clearFunction}>AC</button>
+                            
+                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('1')}>1</button>
+                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('2')}>2</button>
+                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('3')}>3</button>
+                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText(' - ')}>−</button>
+                            
+                            <!-- Placeholder to keep grid aligned since "x" takes 2 rows -->
+                            <div class="col-span-2 hidden sm:block"></div> 
+
+                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono col-span-2" on:click={() => insertText('0')}>0</button>
+                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('.')}>.</button>
+                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText(' + ')}>+</button>
                         </div>
                     </div>
 
