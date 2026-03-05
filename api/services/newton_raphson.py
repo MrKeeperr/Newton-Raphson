@@ -1,8 +1,3 @@
-"""
-Motor matemático para el método de Newton-Raphson.
-Utiliza SymPy para el procesamiento simbólico de funciones matemáticas.
-"""
-
 from sympy import Symbol, lambdify, sympify, SympifyError, diff
 from sympy.parsing.sympy_parser import (
     parse_expr,
@@ -145,16 +140,15 @@ def ejecutar_newton_raphson(
                 iteraciones=resultados,
                 raiz=None,
             )
-        # 5. Aplicar la fórmula de Newton-Raphson
+        # fórmula de Newton-Raphson
         x_nuevo = x_actual - (valor_f / valor_df)
-        # 6. Calcular el error (y segundo escudo)
+        # Calcular el error
         if abs(x_nuevo) < 1e-15:
-            # Si x_nuevo es cero o muy cercano, asignamos error grande
-            error_actual = 1.0
+            error_actual = abs(x_nuevo - x_actual)
         else:
-            # Error relativo: |x_nuevo - x_actual| / |x_nuevo|
+            # Error relativo
             error_actual = abs((x_nuevo - x_actual) / x_nuevo)
-        # 7. Tomar la "foto" - guardar datos de esta iteración
+
         resultados.append(
             NewtonRaphsonResponse(
                 paso=iteracion,
@@ -164,10 +158,10 @@ def ejecutar_newton_raphson(
                 error_relativo=error_actual,
             )
         )
-        # 8. Comprobar si ya ganamos (convergencia)
+        # Comprobar si ya hay convergencia
         if error_actual <= tolerancia:
             # Añadimos el valor final encontrado
-            resultados.append(
+            """resultados.append(
                 NewtonRaphsonResponse(
                     paso=iteracion + 1,
                     x_actual=x_nuevo,
@@ -175,18 +169,16 @@ def ejecutar_newton_raphson(
                     f_derivada_x=float(df(x_nuevo)),
                     error_relativo=error_actual,
                 )
-            )
+            )"""
             return NewtonRaphsonResult(
                 exito=True,
                 mensaje=f"Raíz encontrada después de {iteracion + 1} iteraciones.",
                 iteraciones=resultados,
                 raiz=x_nuevo,
             )
-        # 9. Preparar el siguiente turno
         x_actual = x_nuevo
         iteracion += 1
-    # 10. Entregar el paquete (fuera del while)
-    # Si llegamos aquí, el bucle terminó sin converger
+
     return NewtonRaphsonResult(
         exito=False,
         mensaje=f"No convergió después de {max_iteraciones} iteraciones. Último valor: x = {x_actual}",
