@@ -22,7 +22,6 @@
             const end = funcionInput.selectionEnd;
             funcion = funcion.substring(0, start) + text + funcion.substring(end);
             
-            // Re-enfocar y mover el cursor después del texto insertado
             setTimeout(() => {
                 funcionInput.selectionStart = funcionInput.selectionEnd = start + text.length;
                 funcionInput.focus();
@@ -38,14 +37,12 @@
             const end = funcionInput.selectionEnd;
             
             if (start === end) {
-                // Borrar un caracter hacia atrás
                 funcion = funcion.substring(0, start - 1) + funcion.substring(end);
                 setTimeout(() => {
                     funcionInput.selectionStart = funcionInput.selectionEnd = start - 1;
                     funcionInput.focus();
                 }, 0);
             } else {
-                // Borrar selección actual
                 funcion = funcion.substring(0, start) + funcion.substring(end);
                 setTimeout(() => {
                     funcionInput.selectionStart = funcionInput.selectionEnd = start;
@@ -65,7 +62,7 @@
     // Conexión con la API
     async function calcularRaiz() {
         if (!funcion) {
-            mensajeError = 'Por favor, ingresa una función.';
+            mensajeError = 'Por favor, ingresa una función!!!';
             return;
         }
 
@@ -92,7 +89,7 @@
             const data = await res.json();
 
             if (!res.ok) {
-                throw new Error(data.detail || 'Error al calcular la raíz');
+                throw new Error(data.detail || 'Error Fatal al calcular!');
             }
 
             if (!data.exito) {
@@ -112,217 +109,312 @@
     }
 </script>
 
-<div class="min-h-screen bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 font-sans">
-    <div class="max-w-5xl mx-auto">
-        
-        <div class="text-center mb-10">
-            <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight sm:text-4xl">
-                Calculadora Newton-Raphson
-            </h1>
-            <p class="mt-4 text-lg text-slate-600">
-                Encuentra raíces de funciones matemáticas usando el método numérico de Newton-Raphson.
-            </p>
-        </div>
+<style>
+    /* Retro 2000s Styles */
+    :global(body) {
+        background-color: #000080;
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAABZJREFUeNpi2P//vwMTAwMDEwMD1AEgwAEAHY4DwR55rD8AAAAASUVORK5CYII=');
+        color: #FFFF00;
+        font-family: "Comic Sans MS", "Comic Sans", cursive, sans-serif;
+    }
+    
+    .retro-container {
+        max-w-4xl;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #C0C0C0;
+        border: 4px outset #FFFFFF;
+        color: #000000;
+    }
 
-        <div class="bg-white shadow-sm ring-1 ring-slate-200 sm:rounded-xl mb-8">
-            <div class="px-4 py-6 sm:p-8">
-                <!-- Formulario de Entrada -->
-                <form on:submit|preventDefault={calcularRaiz} class="space-y-6">
-                    <div class="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2 lg:grid-cols-3">
-                        <div class="sm:col-span-2 lg:col-span-3">
-                            <label for="funcion" class="block text-sm font-semibold text-slate-700">Función f(x)</label>
-                            <div class="mt-2">
-                                <input 
-                                    bind:this={funcionInput}
-                                    type="text" 
-                                    id="funcion" 
-                                    bind:value={funcion} 
-                                    placeholder="ej. x^2 - 4 o sin(x) - x/2" 
-                                    class="block w-full rounded-md border-0 py-4 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 text-lg sm:text-2xl font-mono px-4" 
-                                    required
-                                >
-                            </div>
-                        </div>
+    .retro-header {
+        text-align: center;
+        border: 4px inset #FFFFFF;
+        background: #000080;
+        color: #FFFF00;
+        padding: 10px;
+        margin-bottom: 20px;
+    }
 
-                        <div>
-                            <label for="x0" class="block text-sm font-semibold text-slate-700">Punto inicial (x₀)</label>
-                            <div class="mt-2">
-                                <input 
-                                    type="number" 
-                                    step="any" 
-                                    id="x0" 
-                                    bind:value={x0} 
-                                    class="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3" 
-                                    required
-                                >
-                            </div>
-                        </div>
+    h1 {
+        font-family: "Times New Roman", Times, serif;
+        text-shadow: 2px 2px #FF0000;
+        font-size: 36px;
+        margin: 0;
+    }
 
-                        <div>
-                            <label for="tolerancia" class="block text-sm font-semibold text-slate-700">Tolerancia</label>
-                            <div class="mt-2">
-                                <input 
-                                    type="number" 
-                                    step="any" 
-                                    id="tolerancia" 
-                                    bind:value={tolerancia} 
-                                    class="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3" 
-                                    required
-                                >
-                            </div>
-                        </div>
+    .marquee-text {
+        font-size: 16px;
+        font-weight: bold;
+        color: #00FF00;
+        background-color: #000000;
+        padding: 5px;
+        border: 2px solid #00FF00;
+    }
 
-                        <div>
-                            <label for="maxIteraciones" class="block text-sm font-semibold text-slate-700">Máx. Iteraciones</label>
-                            <div class="mt-2">
-                                <input 
-                                    type="number" 
-                                    id="maxIteraciones" 
-                                    bind:value={maxIteraciones} 
-                                    class="block w-full rounded-md border-0 py-2 text-slate-900 shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm sm:leading-6 px-3" 
-                                    required
-                                >
-                            </div>
-                        </div>
-                    </div>
+    .retro-panel {
+        border: 4px inset #FFFFFF;
+        padding: 15px;
+        background: #D4D0C8;
+        margin-bottom: 20px;
+    }
 
-                    <!-- Teclado Matemático Virtual -->
-                    <div class="sm:col-span-2 lg:col-span-3 mt-8 bg-slate-100 p-4 sm:p-6 rounded-xl shadow-inner border border-slate-200">
-                        <div class="text-xs font-semibold text-slate-500 mb-3 uppercase tracking-wider">Teclado Matemático</div>
-                        
-                        <div class="grid grid-cols-4 sm:grid-cols-8 gap-2 mb-2">
-                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('sin(')}>sin</button>
-                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('cos(')}>cos</button>
-                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('tan(')}>tan</button>
-                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('sqrt(')}>√</button>
-                            
-                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('exp(')}>exp</button>
-                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('log(')}>ln</button>
-                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('pi')}>π</button>
-                            <button type="button" class="bg-white hover:bg-blue-50 text-blue-700 font-semibold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-sm font-mono" on:click={() => insertText('E')}>e</button>
-                        </div>
+    .retro-input {
+        border: 2px inset #FFFFFF;
+        background: #FFFFFF;
+        color: #000000;
+        padding: 5px;
+        font-family: monospace;
+        font-size: 16px;
+    }
 
-                        <div class="grid grid-cols-4 sm:grid-cols-8 gap-2">
-                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('7')}>7</button>
-                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('8')}>8</button>
-                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('9')}>9</button>
-                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText(' / ')}>÷</button>
-                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('^')}>^</button>
-                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('(')}>(</button>
-                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText(')')}>)</button>
-                            <button type="button" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 px-3 border border-red-200 rounded shadow-sm transition-colors text-sm font-mono flex items-center justify-center" on:click={backspace}>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9.75L14.25 12m0 0l2.25 2.25M14.25 12l2.25-2.25M14.25 12L12 14.25m-2.58 4.92l-6.375-6.375a1.125 1.125 0 010-1.59L9.42 4.83c.211-.211.498-.33.796-.33H19.5a2.25 2.25 0 012.25 2.25v10.5a2.25 2.25 0 01-2.25 2.25h-9.284c-.298 0-.585-.119-.796-.33z" /></svg>
-                            </button>
-                            
-                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('4')}>4</button>
-                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('5')}>5</button>
-                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('6')}>6</button>
-                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText(' * ')}>×</button>
-                            <button type="button" class="bg-amber-100 hover:bg-amber-200 text-amber-900 font-bold py-2 px-3 border border-amber-300 rounded shadow-sm transition-colors text-xl font-mono col-span-2 row-span-2 flex items-center justify-center" on:click={() => insertText('x')}>x</button>
-                            <button type="button" class="bg-red-50 hover:bg-red-100 text-red-700 font-bold py-2 px-3 border border-red-200 rounded shadow-sm transition-colors text-sm font-mono col-span-2" on:click={clearFunction}>AC</button>
-                            
-                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('1')}>1</button>
-                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('2')}>2</button>
-                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('3')}>3</button>
-                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText(' - ')}>−</button>
-                            
-                            <!-- Placeholder to keep grid aligned since "x" takes 2 rows -->
-                            <div class="col-span-2 hidden sm:block"></div> 
+    .retro-button {
+        background: #C0C0C0;
+        border: 3px outset #FFFFFF;
+        color: #000000;
+        font-weight: bold;
+        cursor: pointer;
+        font-family: "Comic Sans MS", cursive;
+        padding: 5px 10px;
+    }
+    
+    .retro-button:active {
+        border: 3px inset #FFFFFF;
+        background: #A0A0A0;
+    }
 
-                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono col-span-2" on:click={() => insertText('0')}>0</button>
-                            <button type="button" class="bg-white hover:bg-slate-50 text-slate-800 font-bold py-2 px-3 border border-slate-300 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText('.')}>.</button>
-                            <button type="button" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold py-2 px-3 border border-indigo-200 rounded shadow-sm transition-colors text-lg font-mono" on:click={() => insertText(' + ')}>+</button>
-                        </div>
-                    </div>
+    .retro-button-red {
+        background: #FF0000;
+        color: #FFFFFF;
+        border: 3px outset #FF8080;
+    }
 
-                    <div class="flex items-center justify-end pt-4">
-                        <button 
-                            type="submit" 
-                            disabled={cargando} 
-                            class="rounded-md bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-                        >
-                            {cargando ? 'Calculando...' : 'Calcular Raíz'}
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+    .retro-button-red:active {
+        border: 3px inset #FF8080;
+    }
 
-        <!-- Alertas -->
-        {#if mensajeError}
-            <div class="rounded-md bg-red-50 p-4 mb-8 border border-red-200 shadow-sm">
-                <div class="flex">
-                    <div class="ml-3">
-                        <h3 class="text-sm font-medium text-red-800">Se produjo un error</h3>
-                        <div class="mt-2 text-sm text-red-700">
-                            <p>{mensajeError}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {/if}
+    .retro-button-blue {
+        background: #0000FF;
+        color: #FFFFFF;
+        border: 3px outset #8080FF;
+    }
 
-        {#if mensajeExito}
-            <div class="rounded-md bg-green-50 p-4 mb-8 border border-green-200 shadow-sm">
-                <div class="flex items-center">
-                    <div class="ml-3">
-                        <h3 class="text-sm font-medium text-green-800">Cálculo Exitoso</h3>
-                        <div class="mt-2 text-sm text-green-700">
-                            <p>
-                                {mensajeExito} 
-                                {#if raiz !== null}
-                                    <span class="font-bold ml-1">Raíz aproximada: {raiz.toFixed(8)}</span>
-                                {/if}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {/if}
+    .retro-button-blue:active {
+        border: 3px inset #8080FF;
+    }
 
-        <!-- Tabla de Resultados -->
-        {#if resultados.length > 0}
-            <div class="mt-8 flow-root">
-                <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
-                        <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 sm:rounded-lg">
-                            <table class="min-w-full divide-y divide-slate-300">
-                                <thead class="bg-slate-50">
-                                    <tr>
-                                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-slate-900 sm:pl-6">Iteración</th>
-                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">xᵢ</th>
-                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">f(xᵢ)</th>
-                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">f'(xᵢ)</th>
-                                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-slate-900">Error Relativo</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-200 bg-white">
-                                    {#each resultados as fila}
-                                        <tr class="hover:bg-slate-50 transition-colors">
-                                            <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-slate-900 sm:pl-6">
-                                                {fila.paso}
-                                            </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500 font-mono">
-                                                {fila.x_actual.toFixed(8)}
-                                            </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500 font-mono">
-                                                {fila.f_x.toExponential(4)}
-                                            </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500 font-mono">
-                                                {fila.f_derivada_x.toFixed(6)}
-                                            </td>
-                                            <td class="whitespace-nowrap px-3 py-4 text-sm text-slate-500 font-mono">
-                                                {fila.error_relativo !== null ? fila.error_relativo.toExponential(4) : '-'}
-                                            </td>
-                                        </tr>
-                                    {/each}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {/if}
+    .retro-table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 3px outset #FFFFFF;
+        background: #FFFFFF;
+    }
 
+    .retro-table th, .retro-table td {
+        border: 1px solid #808080;
+        padding: 8px;
+        text-align: left;
+    }
+
+    .retro-table th {
+        background: #000080;
+        color: #FFFFFF;
+        font-family: "Times New Roman", Times, serif;
+    }
+
+    .retro-table tr:nth-child(even) {
+        background: #E0E0E0;
+    }
+
+    .alert-error {
+        background: #FF0000;
+        color: #FFFF00;
+        border: 4px outset #FF0000;
+        padding: 10px;
+        font-weight: bold;
+        text-align: center;
+        text-decoration: blink;
+        margin-bottom: 20px;
+    }
+
+    .alert-success {
+        background: #00FF00;
+        color: #000000;
+        border: 4px outset #00FF00;
+        padding: 10px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    hr {
+        border: 0;
+        border-top: 2px groove #FFFFFF;
+        margin: 20px 0;
+    }
+</style>
+
+<div class="retro-container">
+    <div class="retro-header">
+        <h1>★★★ Calculadora Newton-Raphson ★★★</h1>
     </div>
+    
+    <marquee class="marquee-text" scrollamount="5">
+        ¡Encuentra raíces de funciones matemáticas usando el método numérico de Newton-Raphson! ¡Totalmente GRATIS! ¡Diseñado para la Web 2.0!
+    </marquee>
+
+    <div class="retro-panel mt-4">
+        <form on:submit|preventDefault={calcularRaiz}>
+            <table width="100%" cellpadding="5">
+                <tr>
+                    <td colspan="3">
+                        <label for="funcion"><b>Función f(x):</b></label><br>
+                        <input 
+                            bind:this={funcionInput}
+                            type="text" 
+                            id="funcion" 
+                            bind:value={funcion} 
+                            placeholder="Ej. x^2 - 4" 
+                            class="retro-input"
+                            style="width: 95%; font-size: 20px; padding: 10px; color: blue; font-weight: bold;"
+                            required
+                        >
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="x0"><b>Punto inicial (x₀):</b></label><br>
+                        <input type="number" step="any" id="x0" bind:value={x0} class="retro-input" required>
+                    </td>
+                    <td>
+                        <label for="tolerancia"><b>Tolerancia:</b></label><br>
+                        <input type="number" step="any" id="tolerancia" bind:value={tolerancia} class="retro-input" required>
+                    </td>
+                    <td>
+                        <label for="maxIteraciones"><b>Máx. Iteraciones:</b></label><br>
+                        <input type="number" id="maxIteraciones" bind:value={maxIteraciones} class="retro-input" required>
+                    </td>
+                </tr>
+            </table>
+
+            <hr>
+            
+            <!-- Teclado Matemático Virtual Retro -->
+            <div style="text-align: center;">
+                <b>[ Teclado Matemático Virtual ]</b>
+            </div>
+            
+            <table align="center" cellspacing="4" cellpadding="0" style="margin-top: 10px;">
+                <tr>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('sin(')}>sin</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('cos(')}>cos</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('tan(')}>tan</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('sqrt(')}>√</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('exp(')}>exp</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('log(')}>ln</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('pi')}>π</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('E')}>e</button></td>
+                </tr>
+                <tr>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('7')}>7</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('8')}>8</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('9')}>9</button></td>
+                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(' / ')}>÷</button></td>
+                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText('^')}>^</button></td>
+                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText('(')}>(</button></td>
+                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(')')}>)</button></td>
+                    <td><button type="button" class="retro-button retro-button-red" on:click={backspace}>⌫</button></td>
+                </tr>
+                <tr>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('4')}>4</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('5')}>5</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('6')}>6</button></td>
+                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(' * ')}>×</button></td>
+                    <td colspan="2" rowspan="2"><button type="button" class="retro-button" style="width: 100%; height: 100%; font-size: 24px; color: #800000;" on:click={() => insertText('x')}>x</button></td>
+                    <td colspan="2"><button type="button" class="retro-button retro-button-red" style="width: 100%;" on:click={clearFunction}>BORRAR TODO</button></td>
+                </tr>
+                <tr>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('1')}>1</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('2')}>2</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('3')}>3</button></td>
+                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(' - ')}>−</button></td>
+                    <td colspan="2">&nbsp;</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><button type="button" class="retro-button" style="width: 100%;" on:click={() => insertText('0')}>0</button></td>
+                    <td><button type="button" class="retro-button" on:click={() => insertText('.')}>.</button></td>
+                    <td><button type="button" class="retro-button retro-button-blue" on:click={() => insertText(' + ')}>+</button></td>
+                    <td colspan="4">&nbsp;</td>
+                </tr>
+            </table>
+
+            <hr>
+            
+            <div style="text-align: center; margin-top: 15px;">
+                <button 
+                    type="submit" 
+                    disabled={cargando} 
+                    class="retro-button"
+                    style="font-size: 20px; padding: 10px 30px; background: #008000; color: white;"
+                >
+                    {cargando ? 'CALCULANDO...' : '¡CALCULAR RAÍZ!'}
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Alertas -->
+    {#if mensajeError}
+        <div class="alert-error">
+            <blink>⚠️ ¡ERROR! ⚠️</blink><br>
+            {mensajeError}
+        </div>
+    {/if}
+
+    {#if mensajeExito}
+        <div class="alert-success">
+            ✨ ¡ÉXITO! ✨<br>
+            {mensajeExito} 
+            {#if raiz !== null}
+                <br><b>Raíz aproximada: <span style="font-size: 24px;">{raiz.toFixed(8)}</span></b>
+            {/if}
+        </div>
+    {/if}
+
+    <!-- Tabla de Resultados -->
+    {#if resultados.length > 0}
+        <div class="retro-panel">
+            <h2 style="text-align: center; text-decoration: underline; margin-top: 0;">Resultados del Cálculo</h2>
+            <table class="retro-table">
+                <thead>
+                    <tr>
+                        <th>Iteración</th>
+                        <th>xᵢ</th>
+                        <th>f(xᵢ)</th>
+                        <th>f'(xᵢ)</th>
+                        <th>Error Relativo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {#each resultados as fila}
+                        <tr>
+                            <td><b>{fila.paso}</b></td>
+                            <td style="font-family: monospace;">{fila.x_actual.toFixed(8)}</td>
+                            <td style="font-family: monospace;">{fila.f_x.toExponential(4)}</td>
+                            <td style="font-family: monospace;">{fila.f_derivada_x.toFixed(6)}</td>
+                            <td style="font-family: monospace;">
+                                {fila.error_relativo !== null ? fila.error_relativo.toExponential(4) : 'N/A'}
+                            </td>
+                        </tr>
+                    {/each}
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="text-align: center;">
+            <img src="https://web.archive.org/web/20091027005003im_/http://www.geocities.com/Heartland/Plains/1105/undercon.gif" alt="Under Construction" style="max-width: 100px;">
+            <p style="font-size: 10px;">Copyright © 2003 NewtonRaphsonWeb. Todos los derechos reservados.</p>
+        </div>
+    {/if}
+
 </div>
