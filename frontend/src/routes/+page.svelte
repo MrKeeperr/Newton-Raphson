@@ -119,7 +119,7 @@
     }
     
     .retro-container {
-        max-w-4xl;
+        /*max-w-4xl;*/
         margin: 0 auto;
         padding: 20px;
         background-color: #C0C0C0;
