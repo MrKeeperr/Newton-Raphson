@@ -3,13 +3,14 @@ Motor matemático para el método de Newton-Raphson.
 Utiliza SymPy para el procesamiento simbólico de funciones matemáticas.
 """
 
-from sympy import Symbol, sympify, SympifyError
+from sympy import Symbol, lambdify, sympify, SympifyError, diff
 from sympy.parsing.sympy_parser import (
     parse_expr,
     standard_transformations,
     implicit_multiplication_application,
     convert_xor,
 )
+from api.models.schemas import NewtonRaphsonResponse, NewtonRaphsonResult
 
 x = Symbol("x") # definimos x 
 
@@ -21,7 +22,6 @@ TRANSFORMATIONS = standard_transformations + (
     implicit_multiplication_application,
     convert_xor,
 )
-
 
 def parsear_funcion(funcion_texto: str):
     """
@@ -81,3 +81,115 @@ def parsear_funcion(funcion_texto: str):
         )
     except Exception as e:
         raise ValueError(f"Error al procesar la función '{funcion_texto}': {str(e)}")
+
+def calcular_derivada(funcion):
+    """
+    Calcula la derivada de una función simbólica con respecto a x.
+
+    Args:
+        funcion: Expresión simbólica de SymPy que representa la función
+
+    Returns:
+        Expresión simbólica de SymPy que representa la derivada de la función
+    """
+    return funcion.diff(x)
+
+def ejecutar_newton_raphson(
+        funcion_texto:str,
+        x0:float,
+        tolerancia:float=0.0001,
+        max_iteraciones:int=50
+) -> NewtonRaphsonResult:
+    """
+    Ejecuta el método de Newton-Raphson para encontrar una raíz de la función dada.
+
+    Args:
+        funcion_texto: String con la función matemática (ej: "x**2 - 4", "sin(x) - x/2")
+        x0: Punto inicial para comenzar la iteración de Newton-Raphson
+        tolerancia: Tolerancia para el error relativo para detener las iteraciones (default: 0.0001)
+        max_iteraciones: Número máximo de iteraciones permitidas (default: 50)
+    
+    Returns:
+        NewtonRaphsonResult con el resultado del cálculo
+    """
+
+    expresion = parsear_funcion(funcion_texto)
+    derivada = diff(expresion, x)
+    f = lambdify(x, expresion, modules=["math"]) # Crear funciones evaluadoras rápidas (lambdify convierte SymPy a NumPy)
+    df = lambdify(x, derivada, modules=["math"])
+
+    resultados: list[NewtonRaphsonResponse] = []
+    iteracion = 0
+    x_actual = x0
+    error_actual = float("inf")  # Inicializamos con infinito
+
+    while iteracion < max_iteraciones:
+        valor_f = float(f(x_actual))
+        valor_df = float(df(x_actual))
+        
+        if abs(valor_df) < 1e-9:
+            resultados.append(
+                NewtonRaphsonResponse(
+                    paso=iteracion,
+                    x_actual=x_actual,
+                    f_x=valor_f,
+                    f_derivada_x=valor_df,
+                    error_relativo=error_actual
+                    if error_actual != float("inf")
+                    else None,
+                )
+            )
+            return NewtonRaphsonResult(
+                exito=False,
+                mensaje=f"Error: Derivada cero (o muy cercana a cero) en x = {x_actual}. No se puede continuar.",
+                iteraciones=resultados,
+                raiz=None,
+            )
+        # 5. Aplicar la fórmula de Newton-Raphson
+        x_nuevo = x_actual - (valor_f / valor_df)
+        # 6. Calcular el error (y segundo escudo)
+        if abs(x_nuevo) < 1e-15:
+            # Si x_nuevo es cero o muy cercano, asignamos error grande
+            error_actual = 1.0
+        else:
+            # Error relativo: |x_nuevo - x_actual| / |x_nuevo|
+            error_actual = abs((x_nuevo - x_actual) / x_nuevo)
+        # 7. Tomar la "foto" - guardar datos de esta iteración
+        resultados.append(
+            NewtonRaphsonResponse(
+                paso=iteracion,
+                x_actual=x_actual,
+                f_x=valor_f,
+                f_derivada_x=valor_df,
+                error_relativo=error_actual,
+            )
+        )
+        # 8. Comprobar si ya ganamos (convergencia)
+        if error_actual <= tolerancia:
+            # Añadimos el valor final encontrado
+            resultados.append(
+                NewtonRaphsonResponse(
+                    paso=iteracion + 1,
+                    x_actual=x_nuevo,
+                    f_x=float(f(x_nuevo)),
+                    f_derivada_x=float(df(x_nuevo)),
+                    error_relativo=error_actual,
+                )
+            )
+            return NewtonRaphsonResult(
+                exito=True,
+                mensaje=f"Raíz encontrada después de {iteracion + 1} iteraciones.",
+                iteraciones=resultados,
+                raiz=x_nuevo,
+            )
+        # 9. Preparar el siguiente turno
+        x_actual = x_nuevo
+        iteracion += 1
+    # 10. Entregar el paquete (fuera del while)
+    # Si llegamos aquí, el bucle terminó sin converger
+    return NewtonRaphsonResult(
+        exito=False,
+        mensaje=f"No convergió después de {max_iteraciones} iteraciones. Último valor: x = {x_actual}",
+        iteraciones=resultados,
+        raiz=None,
+    )
