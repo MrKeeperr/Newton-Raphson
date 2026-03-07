@@ -1,26 +1,30 @@
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.models.schemas import NewtonRaphsonRequest, NewtonRaphsonResult
 from api.services.newton_raphson import ejecutar_newton_raphson
+
 app = FastAPI(
     title="Newton-Raphson API",
     description="API para calcular raíces de funciones usando el método de Newton-Raphson",
     version="1.0.0",
 )
 
+HOST = os.getenv("API_HOST")
+PORT = int(os.getenv("API_PORT", 8000))
+
 # El middleware permite la comunicación entre la api y el frontend
-origins = [
-    "http://localhost:5173",  # Vite/Svelte server por default
-    "http://localhost:3000",  
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:3000",
-]
+FRONTEND_URLS = os.getenv(
+    "ALLOWED_ORIGINS", 
+    "http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173" # servidores default de svelte
+)
+origins = FRONTEND_URLS.split(",")
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,  
-    allow_credentials=True, 
+    allow_credentials=True,
     allow_methods=["*"],  
     allow_headers=["*"],  
 )
@@ -58,4 +62,4 @@ def calcular_raiz(request: NewtonRaphsonRequest) -> NewtonRaphsonResult:
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host=HOST, port=PORT, reload=False)
